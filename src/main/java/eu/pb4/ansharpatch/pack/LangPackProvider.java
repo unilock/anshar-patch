@@ -2,7 +2,10 @@ package eu.pb4.ansharpatch.pack;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.SharedConstants;
 import net.minecraft.resource.*;
+import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.resource.metadata.ResourceMetadataMap;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -88,7 +91,7 @@ public record LangPackProvider(ModContainer mod) implements ResourcePackProvider
     @Nullable
     @Override
     public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
-        return null;
+        return ResourceMetadataMap.of(PackResourceMetadata.SERIALIZER, new PackResourceMetadata(Text.literal("Lang Files"), SharedConstants.getGameVersion().getResourceVersion(ResourceType.SERVER_DATA), Optional.empty())).get(metaReader);
     }
 
     @Override
