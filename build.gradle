@@ -46,7 +46,7 @@ dependencies {
 	modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-entity:6.1.0"
 	modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.0.5"
 
-	modImplementation include("eu.pb4:polymer-reg-sync-manipulator:0.9.6+1.21")
+	modImplementation include("eu.pb4:polymer-core:0.9.6+1.21")
 	modImplementation include("eu.pb4:polymer-virtual-entity:0.9.6+1.21")
 	modImplementation include("xyz.nucleoid:server-translations-api:2.3.1+1.21-pre2")
 }
