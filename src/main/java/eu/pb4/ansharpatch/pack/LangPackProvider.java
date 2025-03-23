@@ -9,7 +9,7 @@ import net.minecraft.resource.metadata.ResourceMetadataMap;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,11 +27,14 @@ public record LangPackProvider(ModContainer mod) implements ResourcePackProvider
 
     @Override
     public void register(Consumer<ResourcePackProfile> profileAdder) {
-        profileAdder.accept(ResourcePackProfile.create(getInfo(),
-                this,
-                ResourceType.SERVER_DATA,
-                new ResourcePackPosition(true, ResourcePackProfile.InsertionPosition.BOTTOM, false)
-        ));
+        profileAdder.accept(
+                ResourcePackProfile.create(
+                        getInfo(), 
+                        this, 
+                        ResourceType.SERVER_DATA, 
+                        new ResourcePackPosition(true, ResourcePackProfile.InsertionPosition.BOTTOM, false)
+                )
+        );
     }
 
     @Override
@@ -39,7 +42,11 @@ public record LangPackProvider(ModContainer mod) implements ResourcePackProvider
         return this;
     }
 
-    @Nullable
+    @Override
+    public ResourcePack openWithOverlays(ResourcePackInfo info, ResourcePackProfile.Metadata metadata) {
+        return open(info);
+    }
+
     @Override
     public InputSupplier<InputStream> openRoot(String... segments) {
         var path = mod.findPath(String.join("/", segments));
@@ -47,7 +54,6 @@ public record LangPackProvider(ModContainer mod) implements ResourcePackProvider
         return path.map(InputSupplier::create).orElse(null);
     }
 
-    @Nullable
     @Override
     public InputSupplier<InputStream> open(ResourceType type, Identifier id) {
         var path = mod.findPath("assets/" + id.getNamespace() + "/" + id.getPath());
@@ -57,19 +63,20 @@ public record LangPackProvider(ModContainer mod) implements ResourcePackProvider
 
     @Override
     public void findResources(ResourceType type, String namespace, String prefix, ResultConsumer consumer) {
-        var path = mod.findPath("assets/" + namespace + "/" + prefix);
+        var optional = mod.findPath("assets/" + namespace + "/" + prefix);
 
-        if (path.isEmpty()) {
+        if (optional.isEmpty()) {
             return;
         }
 
         try {
-            String separator = path.get().getFileSystem().getSeparator();
-            Files.walkFileTree(path.get(), new SimpleFileVisitor<>() {
+            String separator = optional.get().getFileSystem().getSeparator();
+            Files.walkFileTree(optional.get(), new SimpleFileVisitor<>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    String filename = path.get().relativize(file).toString().replace(separator, "/");
-                    Identifier identifier = Identifier.of(namespace, prefix + "/" + filename);
+                @NotNull
+                public FileVisitResult visitFile(Path file, @NotNull BasicFileAttributes attrs) throws IOException {
+                    String filename = optional.get().relativize(file).toString().replace(separator, "/");
+                    Identifier identifier = Identifier.tryParse(namespace, prefix + "/" + filename);
 
                     if (identifier != null) {
                         consumer.accept(identifier, InputSupplier.create(file));
@@ -79,7 +86,7 @@ public record LangPackProvider(ModContainer mod) implements ResourcePackProvider
                 }
             });
         } catch (IOException ignored) {
-            //
+            // NO-OP
         }
     }
 
@@ -88,16 +95,15 @@ public record LangPackProvider(ModContainer mod) implements ResourcePackProvider
         return Set.of("anshar");
     }
 
-    @Nullable
     @Override
     public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
-        return ResourceMetadataMap.of(PackResourceMetadata.SERIALIZER, new PackResourceMetadata(Text.literal("Lang Files"), SharedConstants.getGameVersion().getResourceVersion(ResourceType.SERVER_DATA), Optional.empty())).get(metaReader);
+        return ResourceMetadataMap.of(PackResourceMetadata.SERIALIZER, new PackResourceMetadata(Text.literal("Anshar Polymer Patch"), SharedConstants.getGameVersion().getResourceVersion(ResourceType.SERVER_DATA), Optional.empty())).get(metaReader);
     }
 
     @Override
     public ResourcePackInfo getInfo() {
         return new ResourcePackInfo(
-                "$anshar-lang",
+                "anshar-polymer-patch",
                 Text.literal("Anshar Polymer Patch"),
                 ResourcePackSource.BUILTIN,
                 Optional.empty()
@@ -107,11 +113,5 @@ public record LangPackProvider(ModContainer mod) implements ResourcePackProvider
     @Override
     public void close() {
 
-    }
-
-
-    @Override
-    public ResourcePack openWithOverlays(ResourcePackInfo info, ResourcePackProfile.Metadata metadata) {
-        return open(info);
     }
 }

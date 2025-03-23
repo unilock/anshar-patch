@@ -1,7 +1,10 @@
 package eu.pb4.ansharpatch.mixin;
 
 import eu.pb4.ansharpatch.pack.LangPackProvider;
-import net.minecraft.resource.*;
+import net.minecraft.resource.FileResourcePackProvider;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProvider;
+import net.minecraft.resource.ResourcePackSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -15,11 +18,7 @@ import java.util.Set;
 
 @Mixin(ResourcePackManager.class)
 public abstract class ResourcePackManagerMixin {
-
-	@Shadow
-	@Final
-	@Mutable
-    private Set<ResourcePackProvider> providers;
+	@Shadow @Final @Mutable private Set<ResourcePackProvider> providers;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	public void injectCustom(ResourcePackProvider[] resourcePackProviders, CallbackInfo info) {

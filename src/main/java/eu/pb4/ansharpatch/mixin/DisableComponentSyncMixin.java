@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({BeaconComponent.class, EndCrystalComponent.class, PlayerTransportComponent.class})
 public abstract class DisableComponentSyncMixin implements AutoSyncedComponent {
-
     @Override
     public boolean shouldSyncWith(ServerPlayerEntity player) {
         return false;

@@ -8,9 +8,11 @@
     "FileResourcePackProviderAccessor",
     "FireworkRocketEntityAccessor",
     "ModRegistriationMixin",
+    "PlayerManagerMixin",
     "PlayerTransportComponentMixin",
     "ResourcePackManagerMixin",
     "ServerPlayerEntityMixin",
+    "ServerWorldMixin",
     "TransportEffectsMixin"
   ],
   "injectors": {

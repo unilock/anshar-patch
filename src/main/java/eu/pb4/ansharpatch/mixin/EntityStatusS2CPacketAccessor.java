@@ -7,11 +7,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(EntityStatusS2CPacket.class)
 public interface EntityStatusS2CPacketAccessor {
-    @Mutable
     @Accessor
+    @Mutable
     void setEntityId(int id);
 
-    @Mutable
     @Accessor
+    @Mutable
     void setStatus(byte status);
 }
